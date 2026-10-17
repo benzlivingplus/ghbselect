@@ -752,7 +752,10 @@ async function callAI(task, files){
       method:'POST', headers, body: JSON.stringify({ task, files }), signal: ctl.signal,
     });
     if (res.status === 401 || res.status === 403) throw new Error('UNAUTHORIZED');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok){
+      let d = ''; try { const jj = await res.json(); d = jj && jj.error ? jj.error : ''; } catch {}
+      const er = new Error('HTTP ' + res.status); er.detail = d; throw er;
+    }
     const j = await res.json();
     if (!j.ok) throw new Error(j.error || 'อ่านเอกสารไม่สำเร็จ');
     return j.data;
@@ -832,6 +835,8 @@ function askUpload({ title, hint, accept, maxFiles, task, skipLabel, dropTitle, 
         else if (err && err.message === 'UNAUTHORIZED') m = 'สิทธิ์การใช้งานหมดอายุหรือไม่ได้รับอนุญาต กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่';
         else if (err && err.user) m = err.message;
         else if (err && err.name === 'AbortError') m = 'ใช้เวลานานเกินไป ลองลดจำนวนไฟล์ หรือกดข้ามเพื่อกรอกเอง';
+        else if (err && err.detail) m += ' (' + err.detail + ' · ' + err.message + ')';
+        else if (err && err.message) m += ' (' + err.message + ')';
         showMsg(el('div', 'error-box', m));
       }
     });
