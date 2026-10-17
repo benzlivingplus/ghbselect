@@ -184,7 +184,11 @@ export default {
     } catch {
       return json({ ok: false, error: 'เชื่อมต่อระบบอ่านเอกสารไม่ได้' }, 502);
     }
-    if (!apiRes.ok) return json({ ok: false, error: 'อ่านเอกสารไม่สำเร็จ (' + apiRes.status + ')' }, 502);
+    if (!apiRes.ok) {
+      let detail = '';
+      try { const ej = await apiRes.json(); detail = String((ej.error && (ej.error.type + ': ' + ej.error.message)) || '').slice(0, 300); } catch {}
+      return json({ ok: false, error: 'อ่านเอกสารไม่สำเร็จ (' + apiRes.status + ') ' + detail }, 502);
+    }
 
     const out = await apiRes.json();
     const text = (out.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
