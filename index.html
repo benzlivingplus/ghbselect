@@ -501,8 +501,8 @@ function evaluate(a){
   if (remaining <= 0) return { error:'รายได้คงเหลือหลังหักภาระเป็นศูนย์หรือติดลบ จึงยังประเมินวงเงินกู้ไม่ได้ในตอนนี้' };
 
   const incHalf  = remaining / 2;
-  // หาร 2 เมื่อ "ฐานเงินเดือน > 20,000" และ "คงเหลือหลังหักภาระ > 20,000" พร้อมกัน ไม่งั้นหาร 3
-  const incOther = (a.base > 20000 && remaining > 20000) ? remaining / 2 : remaining / 3;
+  // หาร 2 เมื่อ "รายได้รวมทั้งหมด หักรายการหักในสลิปและภาระบูโรแล้ว เกิน 20,000" ไม่งั้นหาร 3 (ไม่ดูฐานเงินเดือนแยก)
+  const incOther = remaining > 20000 ? remaining / 2 : remaining / 3;
   const ctx = { remaining, hasWelfare: !!a.welfare };
 
   const list = PROGRAMS
