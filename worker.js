@@ -174,6 +174,7 @@ export default {
           'content-type': 'application/json',
           'x-api-key': env.ANTHROPIC_API_KEY,
           'anthropic-version': '2023-06-01',
+          ...(env.WORKSPACE_ID ? { 'anthropic-workspace-id': env.WORKSPACE_ID } : {}),
         },
         body: JSON.stringify({
           model: env.MODEL || 'claude-sonnet-5-5',
